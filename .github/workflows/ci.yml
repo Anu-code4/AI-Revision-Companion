@@ -39,7 +39,7 @@ jobs:
 
       - name: Build FAISS Index
         run: |
-          python vector_store.py
+          python preprocessing/vector_store.py
 
       - name: Run Tests
         env:
