@@ -37,6 +37,10 @@ jobs:
           python -c "import os; print(os.getcwd())"
           python -c "import sys; print(sys.path)"
 
+      - name: Build FAISS Index
+        run: |
+          python vector_store.py
+
       - name: Run Tests
         env:
           PYTHONPATH: ${{ github.workspace }}
