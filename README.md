@@ -29,3 +29,40 @@ The project is designed with a modular architecture and includes document ingest
 - Docker support
 - GitHub Actions CI
 - Logging and testing
+
+
+---
+
+## System Architecture
+
+```text
+                   User
+                     │
+                     ▼
+          Streamlit Web Interface
+                     │
+                     ▼
+               FastAPI Backend
+                     │
+        ┌────────────┴────────────┐
+        ▼                         ▼
+  Query Router            Conversation Memory
+        │
+        ▼
+  Query Rewriter
+        │
+        ▼
+ Hybrid Retriever (FAISS + BM25)
+        │
+        ▼
+ Cross-Encoder Reranker
+        │
+        ▼
+     Context Builder
+        │
+        ▼
+   Ollama (LLM)
+        │
+        ▼
+ Generated Answer + Sources
+```
