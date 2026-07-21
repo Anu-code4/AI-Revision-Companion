@@ -325,14 +325,6 @@ docker-compose down
 
 
 ---
-
-## Screenshots
-
-
-
-
----
-
 ## Future Enhancements
 
 - User authentication and authorization
