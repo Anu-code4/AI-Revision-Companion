@@ -10,12 +10,14 @@ This module:
 4. Saves chunks into chunks.json.
 """
 
-import os
 import json
+import os
+
 import fitz
 from docx import Document
-from ingestion.file_tracker import detect_changes
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+from ingestion.file_tracker import detect_changes
 
 
 # ==========================================================
@@ -87,8 +89,7 @@ def extract_text(file_path):
     elif extension == ".pdf":
         return extract_text_from_pdf(file_path)
 
-    else:
-        raise ValueError(f"Unsupported file type: {extension}")
+    raise ValueError(f"Unsupported file type: {extension}")
 
 
 # ==========================================================
@@ -102,7 +103,7 @@ def create_chunks(text):
 
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
-        chunk_overlap=50
+        chunk_overlap=50,
     )
 
     return splitter.split_text(text)
@@ -127,20 +128,11 @@ def load_documents(folder_path, files=None):
 
     documents = []
 
-    # ------------------------------------------------------
-    # Load all files
-    # ------------------------------------------------------
-
     if files is None:
-
         files = [
             os.path.join(folder_path, filename)
             for filename in os.listdir(folder_path)
         ]
-
-    # ------------------------------------------------------
-    # Read each document
-    # ------------------------------------------------------
 
     for file_path in files:
 
@@ -164,7 +156,7 @@ def load_documents(folder_path, files=None):
             {
                 "source": filename,
                 "file_type": extension,
-                "text": text
+                "text": text,
             }
         )
 
@@ -172,58 +164,74 @@ def load_documents(folder_path, files=None):
 
 
 # ==========================================================
-# Main
+# Run Chunking
 # ==========================================================
 
-folder_path = os.path.join(os.getcwd(), "Document")
+def run_chunking():
+    """
+    Create chunks.json from all new or modified documents.
+    """
 
-new_files, modified_files, unchanged_files = detect_changes()
+    folder_path = os.path.join(os.getcwd(), "Document")
 
-files_to_process = new_files + modified_files
+    new_files, modified_files, _ = detect_changes()
 
-if not files_to_process:
-    print("✅ No new or modified documents found.")
-    exit()
+    files_to_process = new_files + modified_files
 
-documents = load_documents(
-    folder_path,
-    files_to_process
-)
+    if not files_to_process:
+        print("✅ No new or modified documents found.")
+        return
 
-chunk_data = []
-
-chunk_id = 0
-
-for document in documents:
-
-    chunks = create_chunks(document["text"])
-
-    for chunk in chunks:
-
-        chunk_data.append(
-            {
-                "id": chunk_id,
-                "source": document["source"],
-                "file_type": document["file_type"],
-                "text": chunk
-            }
-        )
-
-        chunk_id += 1
-
-
-# ==========================================================
-# Save chunks
-# ==========================================================
-
-with open("chunks.json", "w", encoding="utf-8") as file:
-
-    json.dump(
-        chunk_data,
-        file,
-        indent=4,
-        ensure_ascii=False
+    documents = load_documents(
+        folder_path,
+        files_to_process,
     )
 
-print(f"\n✅ {len(chunk_data)} chunks created from {len(documents)} document(s).")
-print("Chunks saved to chunks.json")
+    chunk_data = []
+
+    chunk_id = 0
+
+    for document in documents:
+
+        chunks = create_chunks(document["text"])
+
+        for chunk in chunks:
+
+            chunk_data.append(
+                {
+                    "id": chunk_id,
+                    "source": document["source"],
+                    "file_type": document["file_type"],
+                    "text": chunk,
+                }
+            )
+
+            chunk_id += 1
+
+    with open(
+        "chunks.json",
+        "w",
+        encoding="utf-8",
+    ) as file:
+
+        json.dump(
+            chunk_data,
+            file,
+            indent=4,
+            ensure_ascii=False,
+        )
+
+    print(
+        f"\n✅ {len(chunk_data)} chunks created "
+        f"from {len(documents)} document(s)."
+    )
+
+    print("Chunks saved to chunks.json")
+
+
+# ==========================================================
+# CLI
+# ==========================================================
+
+if __name__ == "__main__":
+    run_chunking()

@@ -19,7 +19,6 @@ model = CrossEncoder(
     "cross-encoder/ms-marco-MiniLM-L-6-v2"
 )
 
-
 def rerank(
     query: str,
     retrieved_chunks: list,

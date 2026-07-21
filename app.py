@@ -215,7 +215,7 @@ def stream_response(query: str):
 
 def main():
 
-    print("\n🚀 AI Revision Companion Ready\n")
+    print("\n🚀 AI-Powered Document Retrieval System Ready\n")
 
     while True:
 

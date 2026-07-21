@@ -4,11 +4,11 @@ version: "3.9"
 
 services:
 
-  ai-revision-companion:
+  AI-Powered Document Retrieval System:
 
     build: .
 
-    container_name: ai_revision_companion
+    container_name: AI-Powered Document Retrieval System
 
     ports:
       - "8000:8000"

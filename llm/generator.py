@@ -193,25 +193,18 @@ def generate_answer(
 
     logger.info("Answer generated successfully.")
 
-    # ------------------------------------------------------
-    # Confidence Score
-    # ------------------------------------------------------
+# ------------------------------------------------------
+# Confidence Score
+# ------------------------------------------------------
 
     confidence = None
 
     if query_type == QueryType.DOCUMENT and retrieved_chunks:
 
-        score = retrieved_chunks[0].get("confidence", 0.0)
+        confidence = float(retrieved_chunks[0].get("confidence", 0.0))
 
-        if score >= 8:
-            confidence = "High"
-
-        elif score >= 4:
-            confidence = "Medium"
-
-        else:
-            confidence = "Low"
-
+    # Clamp value between 0 and 1
+    confidence = max(0.0, min(confidence, 1.0))
     # ------------------------------------------------------
     # Sources
     # ------------------------------------------------------

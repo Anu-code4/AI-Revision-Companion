@@ -18,6 +18,7 @@ SUPPORTED_EXTENSIONS = {
     ".txt",
 }
 
+
 # ==========================================================
 # Compute SHA-256 Hash
 # ==========================================================
@@ -42,11 +43,16 @@ def compute_file_hash(file_path: Path) -> str:
 
     return sha256.hexdigest()
 
+
 # ==========================================================
 # Metadata
 # ==========================================================
 
 def load_metadata() -> dict:
+    """
+    Load document metadata.
+    """
+
     if not METADATA_FILE.exists():
         return {}
 
@@ -55,17 +61,24 @@ def load_metadata() -> dict:
 
 
 def save_metadata(metadata: dict):
+    """
+    Save document metadata.
+    """
 
     METADATA_FILE.parent.mkdir(parents=True, exist_ok=True)
 
     with open(METADATA_FILE, "w", encoding="utf-8") as file:
         json.dump(metadata, file, indent=4)
 
+
 # ==========================================================
 # Scan Documents
 # ==========================================================
 
 def scan_documents() -> list[Path]:
+    """
+    Scan supported documents from the Document folder.
+    """
 
     documents = []
 
@@ -76,13 +89,14 @@ def scan_documents() -> list[Path]:
 
     return documents
 
+
 # ==========================================================
 # Detect Changes
 # ==========================================================
 
 def detect_changes():
     """
-    Detects new, modified and unchanged documents.
+    Detect new, modified and unchanged documents.
     """
 
     metadata = load_metadata()
@@ -115,16 +129,17 @@ def detect_changes():
         unchanged_files,
     )
 
+
 # ==========================================================
 # Update Metadata
 # ==========================================================
 
 def update_metadata():
     """
-    Updates document metadata after indexing.
+    Update metadata after successful indexing.
     """
 
-    metadata = load_metadata()
+    metadata = {}
 
     for file in scan_documents():
 
@@ -142,7 +157,7 @@ def update_metadata():
 
 def detect_deleted_files():
     """
-    Returns deleted files.
+    Return deleted files.
     """
 
     metadata = load_metadata()
@@ -162,6 +177,10 @@ def detect_deleted_files():
     return deleted_files
 
 
+# ==========================================================
+# Main
+# ==========================================================
+
 if __name__ == "__main__":
 
     new_files, modified_files, unchanged_files = detect_changes()
@@ -178,10 +197,12 @@ if __name__ == "__main__":
     for file in unchanged_files:
         print("-", file.name)
 
+    deleted_files = detect_deleted_files()
+
+    print("\nDeleted Files")
+    for file in deleted_files:
+        print("-", file)
+
     update_metadata()
 
-    if __name__ == "__main__":
-
-     deleted = detect_deleted_files()
-
-     print(deleted)
+    print("\nMetadata updated successfully.")
